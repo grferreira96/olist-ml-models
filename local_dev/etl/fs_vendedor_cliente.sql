@@ -6,16 +6,16 @@ WITH tb_join AS (
          t2.idVendedor,
          t3.descUF
 
-  FROM silver.olist.pedido AS  t1
+  FROM pedido AS  t1
 
-  LEFT JOIN silver.olist.item_pedido as t2
+  LEFT JOIN item_pedido as t2
   ON t1.idPedido = t2.idPedido
 
-  LEFT JOIN silver.olist.cliente as t3
+  LEFT JOIN cliente as t3
   ON t1.idCliente = t3.idCliente
 
   WHERE dtPedido < '{date}'
-  AND dtPedido >= add_months('{date}', -6)
+  AND dtPedido >= DATE('{date}', '-6 months')
   AND idVendedor IS NOT NULL
 
 ),
@@ -63,7 +63,7 @@ tb_group AS (
 
 SELECT 
     '{date}' AS dtReference,
-    NOW() AS dtIngestion,
+    DATE('now') AS dtIngestion,
     *
 
 FROM tb_group

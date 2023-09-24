@@ -4,13 +4,13 @@ WITH tb_pedido AS (
          t1.idPedido,
          t2.idVendedor
 
-  FROM silver.olist.pedido as t1
+  FROM pedido as t1
 
-  LEFT JOIN silver.olist.item_pedido as t2
+  LEFT JOIN item_pedido as t2
   ON t1.idPedido = t2.idPedido
 
   WHERE t1.dtPedido < '{date}'
-  AND t1.dtPedido >= add_months('{date}', -6)
+  AND t1.dtPedido >= DATE('{date}', '-6 months')
   AND idVendedor IS NOT NULL
 
 ),
@@ -22,7 +22,7 @@ tb_join AS (
 
   FROM tb_pedido AS t1
 
-  LEFT JOIN silver.olist.avaliacao_pedido AS t2
+  LEFT JOIN avaliacao_pedido AS t2
   ON t1.idPedido = t2.idPedido
 
 ),
@@ -32,7 +32,7 @@ tb_summary AS (
   SELECT 
       idVendedor,
       avg(vlNota) as avgNota,
-      percentile(vlNota, 0.5) as medianNota,
+      -- percentile(vlNota, 0.5) as medianNota,
       min(vlNota) as minNota,
       max(vlNota) as maxNota,
       count(vlNota) / count(idPedido) as pctAvaliacao
@@ -44,6 +44,6 @@ tb_summary AS (
 )
 
 SELECT '{date}' AS dtReference,
-       NOW() AS dtIngestion,
+       DATE('now') AS dtIngestion,
        *
 FROM tb_summary

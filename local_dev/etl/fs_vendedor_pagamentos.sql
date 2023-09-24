@@ -5,13 +5,13 @@ WITH tb_pedidos AS (
       t1.idPedido,
       t2.idVendedor
 
-  FROM silver.olist.pedido AS t1
+  FROM pedido AS t1
 
-  LEFT JOIN silver.olist.item_pedido as t2
+  LEFT JOIN item_pedido as t2
   ON t1.idPedido = t2.idPedido
 
   WHERE t1.dtPedido < '{date}'
-  AND t1.dtPedido >= add_months('{date}', -6)
+  AND t1.dtPedido >= DATE('{date}', '-6 months')
   AND idVendedor IS NOT NULL
 
 ),
@@ -24,7 +24,7 @@ tb_join AS (
 
   FROM tb_pedidos AS t1
 
-  LEFT JOIN silver.olist.pagamento_pedido AS t2
+  LEFT JOIN pagamento_pedido AS t2
   ON t1.idPedido = t2.idPedido
 
 ),
@@ -78,7 +78,7 @@ tb_cartao as (
 
   SELECT idVendedor,
          AVG(nrParcelas) AS avgQtdeParcelas,
-         PERCENTILE(nrParcelas, 0.5) AS medianQtdeParcelas,
+        --  PERCENTILE(nrParcelas, 0.5) AS medianQtdeParcelas,
          MAX(nrParcelas) AS maxQtdeParcelas,
          MIN(nrParcelas) AS minQtdeParcelas
 
@@ -92,10 +92,10 @@ tb_cartao as (
 
 SELECT 
        '{date}' AS dtReference,
-       NOW() AS dtIngestion,
+       DATE('now') AS dtIngestion,
        t1.*,
        t2.avgQtdeParcelas,
-       t2.medianQtdeParcelas,
+      --  t2.medianQtdeParcelas,
        t2.maxQtdeParcelas,
        t2.minQtdeParcelas
 

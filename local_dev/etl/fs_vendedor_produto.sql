@@ -4,16 +4,16 @@ WITH tb_join AS (
          t2.idVendedor,
          t3.*
 
-  FROM silver.olist.pedido AS t1
+  FROM pedido AS t1
 
-  LEFT JOIN silver.olist.item_pedido AS t2
+  LEFT JOIN item_pedido AS t2
   ON t1.idPedido = t2.idPedido
 
-  LEFT JOIN silver.olist.produto as t3
+  LEFT JOIN produto as t3
   ON t2.idProduto = t3.idProduto
 
   WHERE t1.dtPedido < '{date}'
-  AND t1.dtPedido >= add_months('{date}', -6)
+  AND t1.dtPedido >= DATE('{date}', '-6 months')
   AND t2.idVendedor IS NOT NULL
 
 ),
@@ -23,7 +23,7 @@ tb_summary as (
   SELECT idVendedor,
          avg(coalesce(nrFotos,0)) as avgFotos,
          avg(vlComprimentoCm * vlAlturaCm * vlLarguraCm) as avgVolumeProduto,
-         percentile(vlComprimentoCm * vlAlturaCm * vlLarguraCm, 0.5) as medianVolumeProduto,
+        --  percentile(vlComprimentoCm * vlAlturaCm * vlLarguraCm, 0.5) as medianVolumeProduto,
          min(vlComprimentoCm * vlAlturaCm * vlLarguraCm) as minVolumeProduto,
          max(vlComprimentoCm * vlAlturaCm * vlLarguraCm) as maxVolumeProduto,
          
@@ -50,7 +50,7 @@ tb_summary as (
 )
 
 SELECT '{date}' AS dtReference,
-       NOW() as dtIngestion,
+       DATE('now') as dtIngestion,
        *
 
 FROM tb_summary
